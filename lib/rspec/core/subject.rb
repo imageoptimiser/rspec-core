@@ -42,11 +42,10 @@ module RSpec
         # @see ExampleGroupMethods#subject
         # @see #should
         def subject
-          if defined?(@original_subject)
-            @original_subject
-          else
-            @original_subject = instance_eval(&self.class.subject)
-          end
+          # This logic defines an implicit subject.
+          # Explicit `subject` declarations re-define this method.
+          described = described_class || self.class.description
+          Class === described ? described.new : described
         end
 
         # When `should` is called with no explicit receiver, the call is
@@ -197,27 +196,11 @@ module RSpec
             let(name, &block)
             subject { send name }
           else
-            block ? @explicit_subject_block = block : explicit_subject || implicit_subject
+            let(:subject, &block)
           end
-        end
-
-        attr_reader :explicit_subject_block
-
-        private
-
-        def explicit_subject
-          group = self
-          while group.respond_to?(:explicit_subject_block)
-            return group.explicit_subject_block if group.explicit_subject_block
-            group = group.superclass
-          end
-        end
-
-        def implicit_subject
-          described = described_class || description
-          Class === described ? proc { described.new } : proc { described }
         end
       end
     end
   end
 end
+
