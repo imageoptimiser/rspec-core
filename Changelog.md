@@ -1,6 +1,12 @@
 ### dev
 [full changelog](http://github.com/rspec/rspec-core/compare/v2.12.2...master)
 
+Enhancements
+
+* Fix `let` and `subject` declaration so that `super`
+  and `return` can be used in them, just like in a normal
+  method. (Myron Marston)
+
 Bug fixes
 
 * Don't blow up when dumping error output for instances
